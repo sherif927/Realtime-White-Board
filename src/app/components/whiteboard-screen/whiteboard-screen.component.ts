@@ -16,6 +16,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
   strokeColor: string = this.colors[this.selectedColor];
   lineStyle: CanvasLineCap = 'round';
   ctx: CanvasRenderingContext2D;
+  undoHistory: any[] = [];
 
 
   constructor() { }
@@ -36,7 +37,6 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
     this.myCanvas.nativeElement.addEventListener('mousemove', this.draw);
   }
 
-
   /**
    * select/unselect the eraser
    *
@@ -45,7 +45,6 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
   toggleEraser(): void {
     this.eraser = !this.eraser;
   }
-
 
   /**
    * methods passed for the event-handler
@@ -56,15 +55,25 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    */
   startPainting = (e) => {
     this.painting = true;
+
     this.ctx.beginPath();
     this.ctx.moveTo(e.clientX, e.clientY);
   }
 
+  /**
+   * when the user lifts the mouse up
+   * the current state of the canvas is
+   * saved onto a stack to be later used
+   * in the UNDO feature.
+   *
+   * @memberof WhiteboardScreenComponent
+   */
   finishPainting = (e) => {
+    let src = this.myCanvas.nativeElement.toDataURL("image/png");
+    this.undoHistory.push(src);
     this.ctx.closePath();
     this.painting = false;
   }
-
 
   /**
    * this method is called when the mouse
@@ -84,8 +93,6 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
     this.ctx.stroke();
   }
 
-
-
   /**
    * sets the properties of the pen
    * such as pen width , color and style.
@@ -98,7 +105,6 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
     this.ctx.strokeStyle = this.strokeColor;
   }
 
-
   /**
    * sets some static properties to mimic
    * the effect of an eraser. 
@@ -106,7 +112,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    * @memberof WhiteboardScreenComponent
    */
   setEraserProperties(): void {
-    this.ctx.lineWidth = 15;
+    this.ctx.lineWidth = 20;
     this.ctx.lineCap = this.lineStyle;
     this.ctx.strokeStyle = 'black';
   }
@@ -115,7 +121,6 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
     this.myCanvas.nativeElement.width = window.innerWidth;
     this.myCanvas.nativeElement.height = window.innerHeight;
   }
-
 
   /**
    * decrements the value of the pen's width
@@ -136,7 +141,6 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
   incrementRadius(): void {
     this.strokeWidth += (this.strokeWidth < 25) ? 1 : 0;
   }
-
 
   /**
    * selects the color and if the eraser
@@ -159,5 +163,20 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    */
   clearScreen(): void {
     this.myCanvas.nativeElement.width = window.innerWidth;
+  }
+
+  /**
+   * fetches the last saved state
+   * of the canvas from the history
+   * and renders it to the screen.
+   *
+   * @memberof WhiteboardScreenComponent
+   */
+  undo(): void {
+    if (this.undoHistory.length > 0) {
+      let image = new Image();
+      image.onload = () => this.ctx.drawImage(image, 0, 0);
+      image.src = this.undoHistory.pop();
+    }
   }
 }

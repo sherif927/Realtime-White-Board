@@ -11,8 +11,11 @@
     <div class="swatch" *ngFor="let color of colors; let i = index" [style.background-color]="colors[i]"
       (click)="selectColor(i)" [class.active]="i === selectedColor"></div>
   </div>
-  <div id="erase">
+  <div class="toolbar-icon">
     <img class="eraser" (click)="toggleEraser()" src='assets/img/eraser.png'>
+  </div>
+  <div class="toolbar-icon">
+    <img class="undo" (click)="undo()" src='assets/img/undo.png'>
   </div>
 </div>
 <canvas #myCanvas></canvas>
