@@ -55,7 +55,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    */
   startPainting = (e) => {
     this.painting = true;
-
+    this.saveState();
     this.ctx.beginPath();
     this.ctx.moveTo(e.clientX, e.clientY);
   }
@@ -69,8 +69,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    * @memberof WhiteboardScreenComponent
    */
   finishPainting = (e) => {
-    let src = this.myCanvas.nativeElement.toDataURL("image/png");
-    this.undoHistory.push(src);
+    this.ctx.stroke();
     this.ctx.closePath();
     this.painting = false;
   }
@@ -91,6 +90,18 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
       this.setProperties();
     this.ctx.lineTo(e.clientX, e.clientY);
     this.ctx.stroke();
+  }
+
+  /**
+   * takes snapshot of the current 
+   * state of the canvas, and stores
+   * it in the undoHistory array
+   *
+   * @memberof WhiteboardScreenComponent
+   */
+  saveState(): void {
+    let src: string = this.myCanvas.nativeElement.toDataURL("image/png");
+    this.undoHistory.push(src);
   }
 
   /**
@@ -162,6 +173,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    * @memberof WhiteboardScreenComponent
    */
   clearScreen(): void {
+    this.undoHistory = [];
     this.myCanvas.nativeElement.width = window.innerWidth;
   }
 
@@ -175,7 +187,10 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
   undo(): void {
     if (this.undoHistory.length > 0) {
       let image = new Image();
-      image.onload = () => this.ctx.drawImage(image, 0, 0);
+      image.onload = () => {
+        this.myCanvas.nativeElement.width = window.innerWidth;
+        this.ctx.drawImage(image, 0, 0)
+      };
       image.src = this.undoHistory.pop();
     }
   }
