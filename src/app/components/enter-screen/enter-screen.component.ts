@@ -6,10 +6,15 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./enter-screen.component.css']
 })
 export class EnterScreenComponent implements OnInit {
-
+  username: string = "";
+  room: string = "";
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  proceed(): void {
+    console.log(`username is ${this.username}, room is ${this.room}`);
   }
 
 }

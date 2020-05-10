@@ -6,6 +6,10 @@ body{
   font-family: sans-serif;
 }
 
+.full{
+  height: 100vh;
+}
+
 body::-webkit-scrollbar {
   width: 1px;
 }
@@ -17,4 +21,29 @@ body::-webkit-scrollbar-track {
 body::-webkit-scrollbar-thumb {
   background-color: darkgrey;
   outline: 1px solid slategrey;
+}
+
+input{
+  color: white !important;
+  border-bottom:  1px solid #fafafa !important; 
+}
+
+.input-field {
+  margin-top: 0rem !important;
+}
+
+.input-field .helper-text {
+  color:#fafafa;
+}
+
+.btn{
+  font-weight: 600;
+}
+
+.input-field>label{
+      color: #fafafa;
+}
+
+.w-30{
+  width: 30%;
 }

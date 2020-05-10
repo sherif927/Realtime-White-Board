@@ -1,1 +1,23 @@
-<p>enter-screen works!</p>
+<div class="row full pic-panel valign-wrapper">
+  <form class="col s12" autocomplete="off">
+    <div class="row">
+      <div class="input-field col s3 offset-s4">
+        <input id="username" type="text" [(ngModel)]="username" [ngModelOptions]="{standalone: true}">
+        <label for="username">Username</label>
+        <span class="helper-text">Pick a username</span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s3 offset-s4">
+        <input id="room" type="text" [(ngModel)]="room" [ngModelOptions]="{standalone: true}">
+        <label for="room">Room Name</label>
+        <span class="helper-text">Enter the name of the room you're trying to join</span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col s4 offset-s5">
+        <a class="waves-effect waves-light red darken-4 btn" (click)="proceed()">Login</a>
+      </div>
+    </div>
+  </form>
+</div>
