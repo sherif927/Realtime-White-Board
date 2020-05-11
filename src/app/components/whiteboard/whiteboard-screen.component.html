@@ -1,0 +1,24 @@
+<div class="toolbar">
+  <div id="clear">
+    <a class="waves-effect waves-light btn btn-small transparent" (click)="clearScreen()">Clear</a>
+  </div>
+  <div id="rad">
+    <p class="range-field">
+      <input type="range" [(ngModel)]="strokeWidth" [ngModelOptions]="{standalone: true}" min="1" max="25" />
+    </p>
+  </div>
+  <div id="colors">
+    <div class="swatch" *ngFor="let color of colors; let i = index" [style.background-color]="colors[i]"
+      (click)="selectColor(i)" [class.active]="i === selectedColor"></div>
+  </div>
+  <div class="toolbar-icon action-icon">
+    <a class="waves-effect waves-light btn btn-small transparent" (click)="undo()"><i
+        class="material-icons">undo</i></a>
+  </div>
+  <div class="toolbar-icon action-icon">
+    <a class="waves-effect waves-light btn btn-small transparent lower" (click)="toggleEraser()"><img
+        src="../../../assets//img//eraser.png" class="eraser">
+    </a>
+  </div>
+</div>
+<canvas #myCanvas></canvas>

@@ -1,11 +1,14 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Output, EventEmitter } from '@angular/core';
+
 
 @Component({
-  selector: 'app-whiteboard-screen',
+  selector: 'whiteboard',
   templateUrl: './whiteboard-screen.component.html',
   styleUrls: ['./whiteboard-screen.component.css']
 })
-export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
+export class Whiteboard implements OnInit, AfterViewInit {
+  @Output()
+  strokeEmitter = new EventEmitter<string>();
   @ViewChild('myCanvas')
   myCanvas: ElementRef<HTMLCanvasElement>;
   colors: string[] = ['#ecf0f1', '#c0392b', '#e67e22', '#f1c40f', '#27ae60', '#2980b9', '#8e44ad'];
@@ -27,7 +30,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    * initialize the canvas context obj
    * and setup the event handlers
    *
-   * @memberof WhiteboardScreenComponent
+   * @memberof Whiteboard
    */
   ngAfterViewInit(): void {
     this.ctx = this.myCanvas.nativeElement.getContext('2d');
@@ -40,7 +43,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
   /**
    * select/unselect the eraser
    *
-   * @memberof WhiteboardScreenComponent
+   * @memberof Whiteboard
    */
   toggleEraser(): void {
     this.eraser = !this.eraser;
@@ -51,7 +54,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    * are passed as arrow functions to avoid
    * conflicts over the 'this' keyword.
    *
-   * @memberof WhiteboardScreenComponent
+   * @memberof Whiteboard
    */
   startPainting = (e) => {
     this.painting = true;
@@ -62,15 +65,15 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
 
   /**
    * when the user lifts the mouse up
-   * the current state of the canvas is
-   * saved onto a stack to be later used
-   * in the UNDO feature.
+   * the current path being drawn will
+   * be closed.
    *
-   * @memberof WhiteboardScreenComponent
+   * @memberof Whiteboard
    */
   finishPainting = (e) => {
     this.ctx.stroke();
     this.ctx.closePath();
+    this.strokeEmitter.emit(this.undoHistory[this.undoHistory.length - 1]);
     this.painting = false;
   }
 
@@ -80,7 +83,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    * is selecting the eraser of just the normal
    * pen and draws accordingly.
    *
-   * @memberof WhiteboardScreenComponent
+   * @memberof Whiteboard
    */
   draw = (e) => {
     if (!this.painting) return;
@@ -97,7 +100,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    * state of the canvas, and stores
    * it in the undoHistory array
    *
-   * @memberof WhiteboardScreenComponent
+   * @memberof Whiteboard
    */
   saveState(): void {
     let src: string = this.myCanvas.nativeElement.toDataURL("image/png");
@@ -108,7 +111,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    * sets the properties of the pen
    * such as pen width , color and style.
    *
-   * @memberof WhiteboardScreenComponent
+   * @memberof Whiteboard
    */
   setProperties(): void {
     this.ctx.lineWidth = this.strokeWidth;
@@ -120,7 +123,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    * sets some static properties to mimic
    * the effect of an eraser. 
    *
-   * @memberof WhiteboardScreenComponent
+   * @memberof Whiteboard
    */
   setEraserProperties(): void {
     this.ctx.lineWidth = 20;
@@ -137,7 +140,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    * decrements the value of the pen's width
    * but makes sure it's always bigger than 1
    *
-   * @memberof WhiteboardScreenComponent
+   * @memberof Whiteboard
    */
   decrementRadius(): void {
     this.strokeWidth -= (this.strokeWidth > 1) ? 1 : 0;
@@ -147,7 +150,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    * increments the value of the pen's width
    * but makes sure it's never bigger than 25
    *
-   * @memberof WhiteboardScreenComponent
+   * @memberof Whiteboard
    */
   incrementRadius(): void {
     this.strokeWidth += (this.strokeWidth < 25) ? 1 : 0;
@@ -158,7 +161,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    * is selected it unselects it.
    *
    * @param {number} index
-   * @memberof WhiteboardScreenComponent
+   * @memberof Whiteboard
    */
   selectColor(index: number): void {
     if (this.eraser) this.eraser = false;
@@ -170,7 +173,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    * if the dimensions of the canvas are
    * changed, then it's re-created
    *
-   * @memberof WhiteboardScreenComponent
+   * @memberof Whiteboard
    */
   clearScreen(): void {
     this.undoHistory = [];
@@ -182,7 +185,7 @@ export class WhiteboardScreenComponent implements OnInit, AfterViewInit {
    * of the canvas from the history
    * and renders it to the screen.
    *
-   * @memberof WhiteboardScreenComponent
+   * @memberof Whiteboard
    */
   undo(): void {
     if (this.undoHistory.length > 0) {
