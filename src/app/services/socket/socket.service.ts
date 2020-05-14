@@ -11,7 +11,7 @@ export class SocketService {
   constructor() { }
 
   init() {
-    this.socket = io('http://192.168.1.4:3000');
+    this.socket = io('http://localhost:3000');
   }
 
   listen(eventName: string) {

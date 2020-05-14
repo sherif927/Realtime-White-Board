@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
   selector: 'app-enter-screen',
@@ -9,12 +10,15 @@ import { Router } from '@angular/router';
 export class EnterScreenComponent implements OnInit {
   username: string = "";
   room: string = "";
-  constructor(private router: Router) { }
+  constructor(private router: Router, private userService: UserService) { }
 
   ngOnInit(): void { }
 
   proceed(): void {
-    this.router.navigate(['/board']);
+    this.userService.setInfo(this.username, this.room);
+    if (this.userService.checkInfo()) {
+      this.router.navigate(['/board']);
+    }
   }
 
 }

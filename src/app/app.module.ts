@@ -10,6 +10,8 @@ import { EnterScreenComponent } from './components/enter-screen/enter-screen.com
 import { Whiteboard } from './components/whiteboard/whiteboard-screen.component';
 import { SocketService } from './services/socket/socket.service';
 import { WhiteboardContainerComponent } from './components/whiteboard-container/whiteboard-container.component';
+import { BoardService } from './services/board/board.service';
+import { UserService } from './services/user/user.service';
 
 const appRoutes: Routes = [
   { path: 'enter-screen', component: EnterScreenComponent },
@@ -31,7 +33,11 @@ const appRoutes: Routes = [
     RouterModule.forRoot(appRoutes),
     ToastNoAnimationModule.forRoot()
   ],
-  providers: [SocketService],
+  providers: [
+    SocketService,
+    BoardService,
+    UserService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

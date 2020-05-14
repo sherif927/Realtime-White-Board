@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { BoardService } from 'src/app/services/board/board.service';
 
 
 @Component({
@@ -22,9 +23,28 @@ export class Whiteboard implements OnInit, AfterViewInit {
   undoHistory: any[] = [];
 
 
-  constructor() { }
+  constructor(private board: BoardService) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.board.getCurrentImage.subscribe(this.onNewStroke);
+  }
+
+  /**
+   * method fired when a new
+   * stroke is recieved .
+   *
+   * @memberof Whiteboard
+   */
+  onNewStroke = (newStroke: any) => {
+    if (newStroke || newStroke !== "") {
+      let image = new Image();
+      image.onload = () => {
+        this.myCanvas.nativeElement.width = window.innerWidth;
+        this.ctx.drawImage(image, 0, 0)
+      };
+      image.src = newStroke.content.payload;
+    }
+  }
 
   /**
    * initialize the canvas context obj
@@ -73,7 +93,8 @@ export class Whiteboard implements OnInit, AfterViewInit {
   finishPainting = (e) => {
     this.ctx.stroke();
     this.ctx.closePath();
-    this.strokeEmitter.emit(this.undoHistory[this.undoHistory.length - 1]);
+    let src: string = this.myCanvas.nativeElement.toDataURL("image/png");
+    this.strokeEmitter.emit(src);
     this.painting = false;
   }
 
@@ -192,7 +213,8 @@ export class Whiteboard implements OnInit, AfterViewInit {
       let image = new Image();
       image.onload = () => {
         this.myCanvas.nativeElement.width = window.innerWidth;
-        this.ctx.drawImage(image, 0, 0)
+        this.ctx.drawImage(image, 0, 0);
+        this.strokeEmitter.emit(image.src);
       };
       image.src = this.undoHistory.pop();
     }
